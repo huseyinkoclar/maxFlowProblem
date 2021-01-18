@@ -2,6 +2,7 @@ public class Edge {
     private Vertex source;
 	private Vertex destination;
 	private int weight;
+	public int bottleneck = 0;
 	
 	public Edge(Vertex source, Vertex destination, int weight) {
 		super();

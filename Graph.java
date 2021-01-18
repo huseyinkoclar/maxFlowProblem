@@ -3,9 +3,11 @@ import java.util.*;
 public class Graph {
 	private HashMap<String,Vertex> vertices;
 	private HashMap<String,Edge> edges;
-	int maxFlow = 0;
-	LinkedList<Edge> bottleneck = new LinkedList<Edge>();
-	LinkedList<List<Vertex>> allpath = new LinkedList<>();
+	public Queue<Edge> bottlenecks = new LinkedList<>();
+	boolean secondquestionflag = false;
+	String source,destination;
+	int firstQuestionAnswer;
+	int bottleneck = 0;
 	Graph() {
 		this.vertices = new HashMap<>();
 		this.edges = new HashMap<>();
@@ -70,120 +72,112 @@ public class Graph {
 	{
 		return vertices.size();
 	}
-	
-	
+
+	public void checkbfs(String s, String d, boolean flag){
+		bottleneck = 0;
+		if(flag){
+			source = s;
+			destination = d;
+		}
+		int flow = 0;
+		secondquestionflag = false;
+		do{
+			for(Edge x : edges.values()){
+				x.getSource().visited = false;
+				x.getDestination().visited = false;
+			}
+			if(flow==bfs(s, d)) break;
+			else {flow = bfs(s, d);}
+		}while(true);
+		if(flag){
+			firstQuestionAnswer = flow;
+			System.out.println("Source " + s + " to " + destination + " max flow is " + flow);
+		}
+		else{
+			vertices.get(destination).value = firstQuestionAnswer;
+			flow -= firstQuestionAnswer;
+		}
+		if(flow != 0) bottleneck = flow;
 		
 
-	public void printAllPaths(String s, String d) 
-    { 
-        ArrayList<Vertex> pathList = new ArrayList<>(); 
-  
-        // add source to path[] 
-        pathList.add(vertices.get(s)); 
-  
-		// Call recursive utility 
-        printAllPathsUtil(s, d, pathList); 
 	}
 	
-	 void printAllPathsUtil(String u, String d, List<Vertex> localPathList) 
-    { 
+	public int bfs(String s, String d){
+		int sourceValue = 0;
+		for(Edge edge : vertices.get(source).getEdges()){
+			sourceValue += edge.getWeight();
+		}
+		vertices.get(source).value = sourceValue;
+		Vertex source = vertices.get(s);
+		Vertex destination = vertices.get(d);
+		Queue<Vertex> q = new LinkedList<>();
+
+		source.visited = true;
+		q.add(source);
 		
-        if (u.equals(d)) {
-			int min = Integer.MAX_VALUE;
-			for(int k = 0; k<localPathList.size()-1;k++){
+		while(!q.isEmpty()){
+			Vertex x = q.poll();
+			for(Edge exEdge : x.getEdges()){
+				if(!exEdge.getDestination().visited && (exEdge.getWeight()>0 || exEdge.getDestination().value!=0) && exEdge.getSource().getName().equals(x.getName())){
+					q.add(exEdge.getDestination());
+					exEdge.getDestination().visited = true;
 
-			System.out.print(localPathList.get(k).getName() + " ");
-
-				for(Edge z : vertices.get(localPathList.get(k).getName()).getEdges()){
-					if(z.getDestination().getName().equals(localPathList.get(k+1).getName()) && z.getWeight()<min)
-						min = z.getWeight();
-				}
-				
-			}
-			for(int k = 0; k<localPathList.size()-1;k++){
-			for(Edge z : vertices.get(localPathList.get(k).getName()).getEdges()){
-				if(z.getDestination().getName().equals(localPathList.get(k+1).getName())){
-					z.setWeight(z.getWeight()-min);
-					if(z.getWeight()==0){
-					boolean flag = false;
-					for(Edge x : bottleneck){
-						if(x.equals(z))
-							flag = true;
+					if(exEdge.getSource().value >= exEdge.getWeight()){
+						exEdge.getDestination().value += exEdge.getWeight();
+						exEdge.getSource().value -= exEdge.getWeight();
+						exEdge.setWeight(0);
+						if(!exEdge.getSource().getName().equals(s))
+						bottlenecks.add(exEdge);
 					}
-					if(!flag) bottleneck.add(z);
+					else{
+						exEdge.getDestination().value += exEdge.getSource().value;
+						exEdge.getSource().value = 0;
+						exEdge.setWeight(exEdge.getWeight()-exEdge.getSource().value);
+					}
+					
 				}
 				
-				}
 			}
+			
 		}
-			maxFlow += min; 
-			System.out.print(localPathList.get(localPathList.size()-1).getName() + " ");
-			List<Vertex> ex = new ArrayList<Vertex>();
-			ex.addAll(localPathList);
-			allpath.add(ex);
 
-			System.out.println(min);
-			System.out.println(maxFlow);
-			System.out.println();
-			
-			
-			
-            return; 
-        } 
-  
-        // Mark the current node 
-        vertices.get(u).visited = true; 
-  
-        // Recur for all the vertices 
-        // adjacent to current vertex 
-        for (Edge i : vertices.get(u).getEdges()) { 
-            if (!vertices.get(i.getDestination().getName()).visited) { 
-                // store current node 
-                // in path[] 
-                localPathList.add(i.getDestination()); 
-                printAllPathsUtil(i.getDestination().getName(), d, localPathList); 
-  
-                // remove current node 
-                // in path[] 
-                localPathList.remove(i.getDestination()); 
-            } 
-        } 
-  
-        // Mark the current node 
-        vertices.get(u).visited = false; 
-	} 
+		return destination.value;
+		//System.out.println(vertices.get("G").value);
+		}
 
-	
-	
+		
 	public void secondQuestion(){
-
-		print();
-		System.out.println("-----------------------------------------------------");
-		System.out.println("Question 2");
-		for(List<Vertex> i : allpath){
-			int counter = 0;
-			int mark = 0;
-			for(int k = 0; k<i.size()-1;k++){
-				for(int z = 0; z<i.get(k).getEdges().size(); z++){
-				if(i.get(k).getEdges().get(z).getDestination().getName().equals(i.get(k+1).getName()) && i.get(k).getEdges().get(z).getWeight()==0){
-					counter++;
-					mark = z;
-				}
-				}
-			}
-			if(counter == 1){
-				System.out.println(i.get(mark).getName() + " - " + i.get(mark+1).getName());
-			}
-
+		Queue<Edge> nonduplicatebottlenecks = new LinkedList<>();
+		Queue<Edge> reelbottleneck = new LinkedList<>();
+		Queue<Edge> thirdquestion = new LinkedList<>();
+		for(Edge element : bottlenecks){
+			if(!nonduplicatebottlenecks.contains(element))
+				nonduplicatebottlenecks.add(element);
 		}
-		/*while(!allpathList.isEmpty()){
-			List<Vertex> path = allpathList.poll();
-			while(!path.isEmpty()){
-				if(path.get()
-			}
-		}*/
+		for(Edge element : nonduplicatebottlenecks){
+			element.setWeight(Integer.MAX_VALUE);
+			checkbfs(element.getSource().getName(), destination, false);
+			if(bottleneck!= 0) {reelbottleneck.add(element); element.bottleneck = bottleneck;}
+			element.setWeight(0);
+		}
+		System.out.println("------------------------------------------------");
+		System.out.println("Second Question");
 		System.out.println();
+		while(!reelbottleneck.isEmpty()){
+			Edge edge = reelbottleneck.poll();
+			thirdquestion.add(edge);
+		System.out.println(edge.getSource().getName() + " to " + edge.getDestination().getName());
+		}
+		System.out.println();
+		System.out.println("------------------------------------------------");
+		System.out.println("Third Question");
+		System.out.println();
+		while(!thirdquestion.isEmpty()){
+			Edge edge = thirdquestion.poll();
+			System.out.println(edge.getSource().getName() + " to " + edge.getDestination().getName() + "  " + edge.bottleneck);
+		}
 	}
+	
 }
 
 

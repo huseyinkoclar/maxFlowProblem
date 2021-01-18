@@ -5,6 +5,7 @@ public class Vertex {
 	private ArrayList<Edge> edges;
 	private Vertex parent;
 	public boolean visited = false;
+	public int value = 0;
 	
 	 public Vertex(String name) {
 	        this.name = name;

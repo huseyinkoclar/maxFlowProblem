@@ -20,10 +20,8 @@ public class main {
             System.out.println("There is a path from " + u +" to " + v); 
         else
             System.out.println("There is no path from " + u +" to " + v);*/
-    System.out.println();
-    graph.printAllPaths(u, v);
+    graph.checkbfs(u, v, true);
     graph.secondQuestion();
-        
     }
     
 
