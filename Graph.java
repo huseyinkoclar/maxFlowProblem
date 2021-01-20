@@ -5,6 +5,7 @@ public class Graph {
 	private HashMap<String,Edge> edges;
 	public Queue<Vertex> visitedVertexs = new LinkedList<>();
 	public Queue<Edge> reelbottlenecks = new LinkedList<>();
+	public Queue<Edge> increasebottlenecks = new LinkedList<>();
 	boolean secondquestionflag = false;
 	String source,destination;
 	int firstQuestionAnswer;
@@ -131,10 +132,14 @@ public class Graph {
 			int counter = 0;
 
 			int path_flow = Integer.MAX_VALUE;
+			int secondsmallest = Integer.MAX_VALUE;
             for (Vertex v = vertices.get(d); v != vertices.get(s); v = v.getParent()) 
             { 
-                u = v.getParent(); 
-                path_flow = Math.min(path_flow, edges.get(u.getName() + "-" + v.getName()).getWeight()); 
+				u = v.getParent();
+				if(edges.get(u.getName() + "-" + v.getName()).getWeight() < path_flow){ 
+				secondsmallest = path_flow;
+				path_flow = edges.get(u.getName() + "-" + v.getName()).getWeight();
+				}
             } 
   
             for (Vertex v = vertices.get(d); v != vertices.get(s); v = v.getParent()) 
@@ -147,7 +152,9 @@ public class Graph {
 				}
 			} 
 			if(counter == 1){
-				reelbottlenecks.add(bottlenecks.poll());
+				Edge e = bottlenecks.poll();
+				e.increase=secondsmallest-path_flow;
+				reelbottlenecks.add(e);
 			}
 			else if(counter > 0){
 				while(!bottlenecks.isEmpty())

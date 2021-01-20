@@ -4,6 +4,7 @@ public class Edge {
 	private int weight;
 	private final int finalweight;
 	public int bottleneck = 0;
+	public int increase = 0;
 	
 	public Edge(Vertex source, Vertex destination, int weight, int finalweight) {
 		super();
