@@ -2,16 +2,13 @@ public class Edge {
     private Vertex source;
 	private Vertex destination;
 	private int weight;
-	private final int finalweight;
-	public int bottleneck = 0;
 	public int increase = 0;
 	
-	public Edge(Vertex source, Vertex destination, int weight, int finalweight) {
+	public Edge(Vertex source, Vertex destination, int weight) {
 		super();
 		this.source = source;
 		this.destination = destination;
 		this.weight = weight;
-		this.finalweight = finalweight;
 	}
 
 	public Vertex getSource() {
@@ -38,7 +35,4 @@ public class Edge {
 		this.weight = weight;
 	}
 
-	public int getFinalweight() {
-		return finalweight;
-	}
 }

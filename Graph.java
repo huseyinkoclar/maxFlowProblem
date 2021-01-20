@@ -37,7 +37,7 @@ public class Graph {
 
 			vertices.get(destination).setParent(vertices.get(source));
 
-			Edge edge = new Edge(source_v, destination_v, weight, weight);
+			Edge edge = new Edge(source_v, destination_v, weight);
 			source_v.addEdge(edge);
 			destination_v.addEdge(edge);
 			edges.put(source + "-" + destination, edge);
@@ -45,23 +45,6 @@ public class Graph {
 		else
 		{
 			edges.get(source + "-" + destination).setWeight(edges.get(source + "-" + destination).getWeight() + weight);
-		}
-	}
-
-	public void fillGraph(){
-		for(Vertex v : vertices()){
-			for(Vertex x : vertices()){
-				if(edges.get(v + "-" + x) == null) addEgde(v.getName(), x.getName(), 0);
-				if(edges.get(x + "-" + v) == null) addEgde(x.getName(), v.getName(), 0);
-			}
-		}
-	}
-
-	public void print(){
-
-		System.out.println("Source\tDestination\tWeight");
-		for (Edge e : edges.values()) {
-			System.out.println("" + e.getSource().getName() + "\t" + e.getDestination().getName() + "\t\t" + e.getWeight()+ " ");
 		}
 	}
 
@@ -83,19 +66,15 @@ public class Graph {
 	{
 		return vertices.size();
 	}
-	
+	//bfs alghoritm
 	public boolean bfs(String s, String d){
 		for(Vertex v : vertices()){
 			v.visited = false;
 		}
-		
-		/*while(!visitedVertexs.isEmpty()){
-			Vertex a = visitedVertexs.poll();
-			a.visited = false;
-		}*/
-
 		LinkedList<Vertex> queue = new LinkedList<Vertex>(); 
 		queue.add(vertices.get(s));
+		if(vertices.get(s)== null)
+			return false;
 		vertices.get(s).visited= true;
 
 		while (!queue.isEmpty()) 
@@ -119,13 +98,13 @@ public class Graph {
 
 		return vertices.get(d).visited;
 	}
-
+	//ford fulkerson alghoritm 
 	int fordFulkerson(String s, String d) 
     { 
 		Vertex u;
   
 		int max_flow = 0;
-		
+		//loop until there is no other path
         while (bfs(s, d)) 
         {   	
 			LinkedList<Edge> bottlenecks = new LinkedList<Edge>(); 
@@ -136,9 +115,13 @@ public class Graph {
             for (Vertex v = vertices.get(d); v != vertices.get(s); v = v.getParent()) 
             { 
 				u = v.getParent();
+				//alghoritms that finds the two smallest value
 				if(edges.get(u.getName() + "-" + v.getName()).getWeight() < path_flow){ 
 				secondsmallest = path_flow;
 				path_flow = edges.get(u.getName() + "-" + v.getName()).getWeight();
+				}
+				else if(edges.get(u.getName() + "-" + v.getName()).getWeight() < secondsmallest){
+					secondsmallest = edges.get(u.getName() + "-" + v.getName()).getWeight();
 				}
             } 
   
@@ -151,6 +134,7 @@ public class Graph {
 					bottlenecks.add(edges.get(u.getName() + "-" + v.getName()));
 				}
 			} 
+			//if there is one bottleneck on the path
 			if(counter == 1){
 				Edge e = bottlenecks.poll();
 				e.increase=secondsmallest-path_flow;
