@@ -5,7 +5,7 @@ public class main {
 
     public static void main(String[] args) throws FileNotFoundException {
     // define edges of the graph 
-    File file = new File("grp1.txt"); 
+    File file = new File("original.txt"); 
     Scanner sc = new Scanner(file); 
     Graph graph = new Graph();
     while (sc.hasNextLine()){ 
@@ -19,6 +19,7 @@ public class main {
     System.out.print("Please enter destination node:  ");
     String v = scan.nextLine();
     System.out.println();
+    System.out.println("please wait for the program to output. It may take a while.");
     System.out.println("-------------------------------------------");
     System.out.println("Question 1:  ");
     System.out.println("The maximum possible flow is " + graph.fordFulkerson(u, v));
